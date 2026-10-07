@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Button from '../components/Button.astro';
@@ -19,6 +19,10 @@ import heroSmile from '../assets/images/hero-smile.jpg';
 import heroDetail from '../assets/images/hero-detail.jpg';
 import servicesMain from '../assets/images/services-main.jpg';
 
+// Same transforms as the hero <Image> below, so the browser can start fetching it before layout.
+const HERO_WIDTHS = [640, 960, 1280, 1680, 2200];
+const heroPreload = await getImage({ src: heroSmile, widths: HERO_WIDTHS, sizes: '100vw', quality: 72 });
+
 const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
 const featured = services.slice(0, 4);
 const posts = (await getCollection('blog')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 3);
@@ -31,6 +35,8 @@ const facilities = [
 ---
 
 <Base>
+  <link slot="head" rel="preload" as="image" href={heroPreload.src} imagesrcset={heroPreload.srcSet.attribute} imagesizes="100vw" />
+
   <!-- Hero -->
   <section class="hero">
     <div class="hero__card">
@@ -38,7 +44,7 @@ const facilities = [
         <Image
           src={heroSmile}
           alt="Close-up of a bright, healthy smile"
-          widths={[640, 960, 1280, 1680, 2200]}
+          widths={HERO_WIDTHS}
           sizes="100vw"
           quality={72}
           loading="eager"

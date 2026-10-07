@@ -49,40 +49,9 @@ function initHeader() {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // Desktop links: a small tooth glides under the hovered link and rests on the current page.
-  const nav = $('[data-nav]');
-  const marker = $('[data-nav-marker]');
-  if (!nav || !marker) return;
-  const links = $$<HTMLAnchorElement>('.header__link', nav);
-  const active = links.find((l) => l.classList.contains('is-active')) ?? null;
-  const desktop = matchMedia('(min-width: 1024px)');
-  const place = (link: HTMLElement | null) => {
-    if (!desktop.matches) return;
-    if (!link) {
-      marker.style.opacity = '0';
-      return;
-    }
-    const r = link.getBoundingClientRect();
-    const n = nav.getBoundingClientRect();
-    marker.style.setProperty('--x', `${r.left - n.left + r.width / 2 - 8}px`);
-    marker.style.opacity = '';
-  };
-  const settle = () => {
-    place(active);
-    nav.classList.add('has-marker');
-  };
-  links.forEach((link) => {
-    link.addEventListener('mouseenter', () => place(link));
-    link.addEventListener('focus', () => place(link));
-  });
-  nav.addEventListener('mouseleave', () => place(active));
-  nav.addEventListener('focusout', () => place(active));
-  document.fonts.ready.then(settle);
-  window.addEventListener('resize', () => place(active), { passive: true });
-  desktop.addEventListener('change', () => place(active));
 }
 
-/* ---------- Full-screen mobile navigation ---------- */
+/* ---------- Mobile navigation drawer ---------- */
 function initNav() {
   const toggle = $<HTMLButtonElement>('[data-nav-toggle]');
   const overlay = $('[data-nav-overlay]');
@@ -114,17 +83,8 @@ function initNav() {
     }
   });
 
-  // Dental chart menu: the row of teeth whitens up to the item being hovered or focused.
-  const links = $$('[data-nav-index]', overlay);
-  const activeIndex = links.findIndex((l) => l.classList.contains('is-active'));
-  const light = (i: number) => overlay.style.setProperty('--lit', String(i + 1));
-  links.forEach((link) => {
-    const i = Number(link.dataset.navIndex);
-    link.addEventListener('mouseenter', () => light(i));
-    link.addEventListener('focus', () => light(i));
-  });
-  overlay.addEventListener('mouseleave', () => light(activeIndex));
-  light(activeIndex);
+  $$('[data-nav-close]', overlay).forEach((el) => el.addEventListener('click', () => set(false)));
+  matchMedia('(min-width: 1024px)').addEventListener('change', (e) => e.matches && set(false));
 }
 
 /* ---------- Curtain: preloader on first visit, wipe on every page change ---------- */
@@ -147,7 +107,7 @@ function initCurtain(): Promise<void> {
       const n = { v: 0 };
       tl.to(n, {
         v: 100,
-        duration: 0.8,
+        duration: 0.6,
         ease: 'power2.inOut',
         onUpdate: () => {
           if (count) count.textContent = String(Math.round(n.v));
@@ -161,7 +121,7 @@ function initCurtain(): Promise<void> {
       }
     }
     tl.add(() => resolve());
-    tl.to(curtain, { yPercent: -100, duration: 0.7, ease: 'power3.inOut' });
+    tl.to(curtain, { yPercent: -100, duration: 0.6, ease: 'power3.inOut' });
   });
 }
 

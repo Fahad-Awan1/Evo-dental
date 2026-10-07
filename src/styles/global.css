@@ -499,8 +499,8 @@ html.is-preloading .curtain__inner {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   animation:
-    mark-draw 0.7s 0.05s var(--ease-io) forwards,
-    mark-fill 0.35s 0.55s ease forwards;
+    mark-draw 0.5s 0.05s var(--ease-io) forwards,
+    mark-fill 0.3s 0.4s ease forwards;
 }
 @keyframes mark-draw {
   to {

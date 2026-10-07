@@ -14,10 +14,10 @@ export const site = {
   tagline: 'Modern dentistry with a gentle touch, delivered by experienced dental professionals.',
   description:
     'Evo Dental is a modern dental clinic offering preventive, cosmetic, pediatric and emergency dentistry, implants, braces and clear aligners in a calm, comfortable setting.',
-  phone: '+1 (555) 014-2400',
-  phoneHref: 'tel:+15550142400',
-  whatsapp: '15550142400',
-  email: 'hello@evodental.example',
+  phone: '+1 713 364-5155',
+  phoneHref: 'tel:+17133645155',
+  whatsapp: '17133645155',
+  email: 'safersolutionllc@gmail.com',
   address: {
     street: '24 Crescent Avenue, Suite 200',
     city: 'Riverside',
@@ -33,7 +33,7 @@ export const site = {
   ] as HoursRow[],
   socials: [
     { label: 'Facebook', icon: 'facebook', href: 'https://www.facebook.com/' },
-    { label: 'WhatsApp', icon: 'whatsapp', href: 'https://wa.me/15550142400' },
+    { label: 'WhatsApp', icon: 'whatsapp', href: 'https://wa.me/17133645155' },
     { label: 'Instagram', icon: 'instagram', href: 'https://www.instagram.com/' },
   ],
   stats: [

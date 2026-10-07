@@ -2,23 +2,18 @@
 import Logo from './Logo.astro';
 import Roll from './Roll.astro';
 import Icon from './Icon.astro';
-import { nav, site, fullAddress, hoursText } from '../data/site';
+import { nav, site, hoursText } from '../data/site';
 
 const path = Astro.url.pathname;
 const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
-// Menu items are numbered like teeth on a dental chart (upper right quadrant, FDI notation).
-const FDI = ['11', '12', '13', '14', '15', '16', '17', '18'];
-// Ten small teeth along the bottom of the menu, laid out on a smile curve.
-const SMILE = [0, 7, 13, 17, 19, 19, 17, 13, 7, 0];
-const TOOTH =
-  'M24 9c-3.2 0-5.2-2-9-2C9.6 7 6 11.2 6 16.8c0 4.6 1.9 7.6 3 11.6 1.2 4.4 1.3 9.3 2.8 12.5.8 1.7 3.2 1.6 3.9-.2 1.4-3.7 1.5-10.7 8.3-10.7s6.900 7 8.300 10.700c.7 1.800 3.100 1.900 3.900.2 1.500-3.200 1.600-8.100 2.800-12.500 1.100-4 3-7 3-11.600C42 11.200 38.400 7 33 7c-3.800 0-5.800 2-9 2z';
+const weekdays = site.hours[0];
 ---
 
 <header class="header" data-header>
   <div class="header__bar">
     <a href="/" class="header__logo" aria-label="Evo Dental home"><Logo /></a>
 
-    <nav class="header__nav" aria-label="Primary" data-nav>
+    <nav class="header__nav" aria-label="Primary">
       {
         nav.map((item) => (
           <a
@@ -30,10 +25,6 @@ const TOOTH =
           </a>
         ))
       }
-      <span class="header__marker" aria-hidden="true" data-nav-marker>
-        <svg viewBox="0 0 48 48"><path d={TOOTH}></path></svg>
-        <i></i>
-      </span>
     </nav>
 
     <div class="header__actions">
@@ -41,69 +32,41 @@ const TOOTH =
         <Roll text="Let's Get You Smiling" />
         <span class="header__cta-icon"><Icon name="arrow-ur" /></span>
       </a>
-      <button class="tooth-btn" type="button" aria-expanded="false" aria-controls="nav-overlay" data-nav-toggle>
-        <span class="tooth-btn__label" aria-hidden="true"><span>Menu</span><span>Close</span></span>
-        <span class="tooth-btn__disc">
-          <svg class="tooth-btn__tooth" viewBox="0 0 48 48" aria-hidden="true"><path d={TOOTH}></path></svg>
-          <span class="tooth-btn__x" aria-hidden="true"><i></i><i></i></span>
-        </span>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="nav-overlay" data-nav-toggle>
         <span class="sr-only">Menu</span>
+        <span class="burger__lines" aria-hidden="true"><i></i><i></i></span>
       </button>
     </div>
   </div>
 </header>
 
-<div class="nav-overlay on-rust" id="nav-overlay" data-nav-overlay hidden>
-  <div class="nav-overlay__inner">
-    <div class="nav-overlay__main">
-      <p class="nav-overlay__eyebrow" style="--i:0">Dental chart · where to next?</p>
-      <nav class="nav-overlay__links" aria-label="Site menu">
-        {
-          nav.map((item, i) => (
-            <a
-              href={item.href}
-              class:list={['nav-overlay__link', { 'is-active': isActive(item.href) }]}
-              style={`--i:${i + 1}`}
-              data-nav-index={i}
-              aria-current={isActive(item.href) ? 'page' : undefined}
-            >
-              <span class="nav-overlay__tooth" aria-hidden="true">
-                <svg viewBox="0 0 48 48"><path d={TOOTH}></path></svg>
-              </span>
-              <span class="nav-overlay__num" aria-hidden="true">{FDI[i]}</span>
-              <span class="nav-overlay__label">{item.label}</span>
-              <span class="nav-overlay__arrow" aria-hidden="true"><Icon name="arrow" /></span>
-            </a>
-          ))
-        }
-      </nav>
-    </div>
-
-    <aside class="nav-overlay__side" style={`--i:${nav.length + 1}`}>
-      <div class="nav-overlay__smile" aria-hidden="true">
-        {SMILE.map((y, k) => <svg viewBox="0 0 48 48" style={`--k:${k}; --y:${y}px`}><path d={TOOTH}></path></svg>)}
-      </div>
-      <p class="nav-overlay__tag">Healthy, confident smiles.</p>
-      <dl class="nav-overlay__hours">
-        {
-          site.hours.map((h) => (
-            <div>
-              <dt>{h.label}</dt>
-              <dd>{hoursText(h)}</dd>
-            </div>
-          ))
-        }
-      </dl>
-      <div class="nav-overlay__contact">
-        <a href={site.phoneHref}><Icon name="phone" />{site.phone}</a>
-        <a href={`mailto:${site.email}`}><Icon name="mail" />{site.email}</a>
-        <p><Icon name="pin" />{fullAddress}</p>
-      </div>
-      <a href={site.phoneHref} class="nav-overlay__emergency">
-        <Icon name="bolt" />
-        <span>Dental emergency? <strong>Call us now</strong></span>
+<!-- Phone and tablet menu: a slide in drawer from the right -->
+<div class="drawer" id="nav-overlay" data-nav-overlay hidden>
+  <div class="drawer__backdrop" data-nav-close></div>
+  <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="Menu">
+    <nav class="drawer__links" aria-label="Mobile">
+      {
+        nav.map((item, i) => (
+          <a
+            href={item.href}
+            class:list={['drawer__link', { 'is-active': isActive(item.href) }]}
+            style={`--i:${i}`}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            <span class="drawer__num">0{i + 1}</span>
+            <span class="drawer__label">{item.label}</span>
+            <span class="drawer__chev"><Icon name="arrow" /></span>
+          </a>
+        ))
+      }
+    </nav>
+    <div class="drawer__foot" style={`--i:${nav.length}`}>
+      <a href="/contact/" class="btn btn--primary drawer__book">
+        Book Appointment <span class="btn__icon"><Icon name="arrow" /></span>
       </a>
-    </aside>
+      <a href={site.phoneHref} class="drawer__row"><Icon name="phone" />{site.phone}</a>
+      <p class="drawer__row"><Icon name="clock" />{weekdays.label}: {hoursText(weekdays)}</p>
+    </div>
   </div>
 </div>
 
@@ -125,14 +88,15 @@ const TOOTH =
     max-width: var(--maxw);
     height: calc(var(--header-h) - 12px);
     margin-inline: auto;
-    padding: 0 8px 0 18px;
+    padding: 0 10px 0 18px;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0);
     transition:
       background-color 0.4s var(--ease),
       box-shadow 0.4s var(--ease);
   }
-  .header.is-scrolled .header__bar {
+  .header.is-scrolled .header__bar,
+  :global(html.nav-open) .header__bar {
     background: rgba(255, 255, 255, 0.86);
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
@@ -143,24 +107,12 @@ const TOOTH =
   }
   :global(html.nav-open) .header {
     transform: none;
-    color: var(--white);
-    --logo-bg: var(--rust);
-    --logo-accent: var(--white);
-  }
-  :global(html.nav-open) .header__bar {
-    background: transparent;
-    box-shadow: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
   }
   .header__logo {
     display: inline-flex;
     padding: 6px 0;
   }
-
-  /* ---------- Desktop links with a gliding tooth marker ---------- */
   .header__nav {
-    position: relative;
     display: none;
     gap: clamp(18px, 2.2vw, 34px);
     font-size: 0.95rem;
@@ -170,7 +122,6 @@ const TOOTH =
     position: relative;
     padding: 10px 0;
   }
-  /* no JavaScript fallback: a dot under the current page */
   .header__link::after {
     content: '';
     position: absolute;
@@ -186,66 +137,15 @@ const TOOTH =
   .header__link.is-active::after {
     transform: translateX(-50%) scale(1);
   }
-  .header__nav:global(.has-marker) .header__link::after {
-    display: none;
-  }
-  .header__marker {
-    position: absolute;
-    left: 0;
-    bottom: -3px;
-    width: 16px;
-    height: 16px;
-    color: var(--rust);
-    opacity: 0;
-    transform: translateX(var(--x, 0px));
-    transition:
-      transform 0.55s cubic-bezier(0.34, 1.3, 0.64, 1),
-      opacity 0.3s var(--ease);
-    pointer-events: none;
-  }
-  .header__nav:global(.has-marker) .header__marker {
-    opacity: 1;
-  }
-  .header__marker svg {
-    width: 100%;
-    height: 100%;
-    fill: currentColor;
-  }
-  .header__marker i {
-    position: absolute;
-    right: -3px;
-    top: -3px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--cream);
-    box-shadow: 0 0 0 1.5px var(--rust);
-    animation: marker-spark 1.8s ease-in-out infinite;
-  }
-  @keyframes marker-spark {
-    50% {
-      transform: scale(1.5);
-      opacity: 0.6;
-    }
-  }
-  :global(html.nav-open) .header__marker,
-  :global(html.nav-open) .header__nav,
-  :global(html.nav-open) .header__cta {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s var(--ease);
-  }
-
   .header__actions {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
   }
   .header__cta {
     display: none;
     align-items: center;
     gap: 10px;
-    margin-right: 6px;
     font-size: 0.92rem;
     font-weight: 500;
   }
@@ -266,44 +166,7 @@ const TOOTH =
   .header__cta:hover .header__cta-icon {
     transform: rotate(45deg);
   }
-
-  /* ---------- Tooth shaped menu button ---------- */
-  .tooth-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 44px;
-    padding-left: 6px;
-    border-radius: 999px;
-    color: inherit;
-  }
-  .tooth-btn__label {
-    display: none;
-    position: relative;
-    width: 3.2em;
-    height: 1.2em;
-    overflow: hidden;
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-align: right;
-  }
-  .tooth-btn__label span {
-    position: absolute;
-    right: 0;
-    top: 0;
-    transition: transform 0.5s var(--ease);
-  }
-  .tooth-btn__label span:last-child {
-    transform: translateY(110%);
-  }
-  .tooth-btn[aria-expanded='true'] .tooth-btn__label span:first-child {
-    transform: translateY(-110%);
-  }
-  .tooth-btn[aria-expanded='true'] .tooth-btn__label span:last-child {
-    transform: none;
-  }
-  .tooth-btn__disc {
-    position: relative;
+  .burger {
     display: grid;
     place-items: center;
     width: 44px;
@@ -311,309 +174,186 @@ const TOOTH =
     border-radius: 50%;
     background: var(--rust);
     color: var(--white);
-    transition:
-      background-color 0.35s var(--ease),
-      color 0.35s var(--ease),
-      transform 0.35s var(--ease);
+    transition: background-color 0.3s;
   }
-  .tooth-btn:hover .tooth-btn__disc {
-    transform: scale(1.06);
-  }
-  .tooth-btn__tooth,
-  .tooth-btn__x {
-    grid-area: 1 / 1;
-    transition:
-      transform 0.5s var(--ease),
-      opacity 0.3s var(--ease);
-  }
-  .tooth-btn__tooth {
-    width: 22px;
-    height: 22px;
-    fill: currentColor;
-  }
-  .tooth-btn__x {
+  .burger__lines {
     position: relative;
     width: 18px;
-    height: 18px;
-    opacity: 0;
-    transform: rotate(-90deg) scale(0.5);
+    height: 10px;
   }
-  .tooth-btn__x i {
+  .burger__lines i {
     position: absolute;
     left: 0;
-    top: 8px;
     width: 100%;
     height: 2px;
     border-radius: 2px;
     background: currentColor;
+    transition: transform 0.4s var(--ease);
   }
-  .tooth-btn__x i:first-child {
-    transform: rotate(45deg);
+  .burger__lines i:first-child {
+    top: 0;
   }
-  .tooth-btn__x i:last-child {
-    transform: rotate(-45deg);
+  .burger__lines i:last-child {
+    bottom: 0;
   }
-  .tooth-btn[aria-expanded='true'] .tooth-btn__disc {
-    background: var(--white);
-    color: var(--rust);
+  .burger[aria-expanded='true'] .burger__lines i:first-child {
+    transform: translateY(4px) rotate(45deg);
   }
-  .tooth-btn[aria-expanded='true'] .tooth-btn__tooth {
-    opacity: 0;
-    transform: rotate(90deg) scale(0.4);
-  }
-  .tooth-btn[aria-expanded='true'] .tooth-btn__x {
-    opacity: 1;
-    transform: none;
+  .burger[aria-expanded='true'] .burger__lines i:last-child {
+    transform: translateY(-4px) rotate(-45deg);
   }
 
-  /* ---------- Full screen "dental chart" menu ---------- */
-  .nav-overlay {
+  /* ---------- Drawer ---------- */
+  .drawer {
     position: fixed;
     inset: 0;
     z-index: 890;
-    overflow-y: auto;
-    background:
-      radial-gradient(120% 80% at 100% 0%, rgba(255, 255, 255, 0.12), transparent 50%),
-      linear-gradient(165deg, var(--rust) 40%, var(--rust-deep));
-    color: var(--white);
-    clip-path: circle(0% at calc(100% - 44px) 40px);
-    transition: clip-path 0.75s var(--ease-io);
   }
-  .nav-overlay[hidden] {
+  .drawer[hidden] {
     display: none;
   }
-  .nav-overlay.is-open {
-    clip-path: circle(150% at calc(100% - 44px) 40px);
+  .drawer__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(19, 17, 16, 0.4);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.45s var(--ease);
   }
-  .nav-overlay__inner {
-    display: grid;
-    gap: 32px;
-    min-height: 100%;
-    max-width: var(--maxw);
-    margin-inline: auto;
-    padding: calc(var(--header-h) + 24px) var(--pad) max(28px, env(safe-area-inset-bottom));
-  }
-  .nav-overlay__eyebrow {
-    margin-bottom: 10px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--cream);
-  }
-  .nav-overlay__links {
+  .drawer__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    width: min(86vw, 400px);
+    padding: calc(var(--header-h) + 20px) 22px max(24px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+    border-radius: var(--r-lg) 0 0 var(--r-lg);
+    background: var(--white);
+    box-shadow: -20px 0 60px rgba(19, 17, 16, 0.18);
+    transform: translateX(104%);
+    transition: transform 0.55s var(--ease);
   }
-  .nav-overlay__link {
-    display: grid;
-    grid-template-columns: 34px auto 1fr auto;
-    align-items: center;
-    gap: 14px;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-    font-size: clamp(1.8rem, 7.4vw, 3.4rem);
-    font-weight: 500;
-    line-height: 1.1;
-    text-transform: uppercase;
-    letter-spacing: -0.01em;
-  }
-  .nav-overlay__tooth {
-    width: 34px;
-    height: 34px;
-  }
-  .nav-overlay__tooth svg {
-    width: 100%;
-    height: 100%;
-    fill: rgba(255, 255, 255, 0);
-    stroke: var(--white);
-    stroke-width: 1.6;
-    stroke-linejoin: round;
-    transition:
-      fill 0.45s var(--ease),
-      transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .nav-overlay__link:hover .nav-overlay__tooth svg,
-  .nav-overlay__link:focus-visible .nav-overlay__tooth svg,
-  .nav-overlay__link.is-active .nav-overlay__tooth svg {
-    fill: var(--white);
-    transform: scale(1.12) rotate(-8deg);
-  }
-  .nav-overlay__num {
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    font-variant-numeric: tabular-nums;
-    opacity: 0.7;
-  }
-  .nav-overlay__label {
-    transition: transform 0.45s var(--ease);
-  }
-  .nav-overlay__link:hover .nav-overlay__label {
-    transform: translateX(8px);
-  }
-  .nav-overlay__link.is-active .nav-overlay__label {
-    font-style: italic;
-    font-weight: 700;
-  }
-  .nav-overlay__arrow {
-    display: grid;
-    place-items: center;
-    width: 40px;
-    height: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 50%;
-    opacity: 0;
-    transform: translateX(-10px);
-    transition:
-      opacity 0.4s var(--ease),
-      transform 0.45s var(--ease),
-      background-color 0.3s;
-  }
-  .nav-overlay__arrow :global(svg) {
-    width: 18px;
-    height: 18px;
-  }
-  .nav-overlay__link:hover .nav-overlay__arrow,
-  .nav-overlay__link:focus-visible .nav-overlay__arrow {
+  .drawer.is-open .drawer__backdrop {
     opacity: 1;
+  }
+  .drawer.is-open .drawer__panel {
     transform: none;
-    background: rgba(255, 255, 255, 0.12);
   }
-
-  /* side column: smile of teeth, hours, contact, emergency */
-  .nav-overlay__side {
-    display: grid;
-    gap: 18px;
-    align-content: start;
-  }
-  .nav-overlay__smile {
-    display: flex;
-    justify-content: center;
-    gap: 2px;
-    padding: 6px 0 22px;
-  }
-  .nav-overlay__smile svg {
-    width: clamp(22px, 7vw, 34px);
-    height: auto;
-    fill: var(--white);
-    opacity: 0.3;
-    transform: translateY(var(--y)) rotate(calc((var(--k) - 4.5) * 4deg));
-    transition: opacity 0.35s var(--ease) calc(var(--k) * 30ms);
-  }
-  /* teeth whiten one by one as you move through the menu (--lit is set by app.ts) */
-  .nav-overlay__smile svg {
-    opacity: calc(0.3 + 0.7 * clamp(0, var(--lit, 0) - var(--k), 1));
-  }
-  .nav-overlay__tag {
-    font-size: 1.05rem;
-    font-weight: 500;
-    font-style: italic;
-  }
-  .nav-overlay__hours {
+  .drawer__links {
     display: grid;
     gap: 4px;
-    margin: 0;
-    font-size: 0.9rem;
   }
-  .nav-overlay__hours > div {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-  }
-  .nav-overlay__hours dd {
-    font-weight: 600;
-  }
-  .nav-overlay__contact {
+  .drawer__link {
     display: grid;
-    gap: 8px;
-    font-size: 0.92rem;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 14px;
+    min-height: 56px;
+    padding: 10px 14px 10px 16px;
+    border-radius: 16px;
+    font-size: 1.25rem;
+    font-weight: 500;
+    transition:
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease);
   }
-  .nav-overlay__contact > * {
+  .drawer__num {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--rust);
+  }
+  .drawer__chev {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--card);
+    color: var(--rust);
+    transition:
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease);
+  }
+  .drawer__chev :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
+  .drawer__link.is-active {
+    background: var(--cream);
+  }
+  .drawer__link.is-active .drawer__chev,
+  .drawer__link:active .drawer__chev {
+    background: var(--rust);
+    color: var(--white);
+  }
+  .drawer__foot {
+    display: grid;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+  .drawer__book {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .drawer__row {
     display: flex;
     align-items: center;
     gap: 10px;
+    min-height: 40px;
+    font-size: 0.95rem;
+    color: var(--muted);
   }
-  .nav-overlay__contact :global(svg) {
+  .drawer__row :global(svg) {
     width: 18px;
     height: 18px;
     flex: none;
-  }
-  .nav-overlay__emergency {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-radius: var(--r-sm);
-    background: var(--cream);
-    color: var(--rust-deep);
-    font-size: 0.92rem;
-    transition: transform 0.4s var(--ease);
-  }
-  .nav-overlay__emergency :global(svg) {
-    width: 20px;
-    height: 20px;
-    flex: none;
-  }
-  .nav-overlay__emergency:hover {
-    transform: translateY(-3px);
+    color: var(--rust);
   }
 
-  /* staggered entrance */
-  .nav-overlay__eyebrow,
-  .nav-overlay__link,
-  .nav-overlay__side {
+  /* links slide in one after another once the panel is open */
+  .drawer__link,
+  .drawer__foot {
     opacity: 0;
-    transform: translateY(26px);
+    transform: translateX(24px);
     transition:
-      opacity 0.6s var(--ease),
-      transform 0.6s var(--ease);
+      opacity 0.5s var(--ease),
+      transform 0.5s var(--ease);
   }
-  .nav-overlay.is-open .nav-overlay__eyebrow,
-  .nav-overlay.is-open .nav-overlay__link,
-  .nav-overlay.is-open .nav-overlay__side {
+  .drawer.is-open .drawer__link,
+  .drawer.is-open .drawer__foot {
     opacity: 1;
     transform: none;
-    transition-delay: calc(0.25s + var(--i) * 0.06s);
+    transition-delay: calc(0.2s + var(--i) * 0.05s);
   }
 
+  @media (min-width: 1024px) {
+    .header__nav {
+      display: flex;
+    }
+    .burger {
+      display: none;
+    }
+    .header__cta {
+      display: inline-flex;
+    }
+    .drawer {
+      display: none !important;
+    }
+  }
   @media (min-width: 480px) and (max-width: 1023px) {
     .header__cta {
       display: inline-flex;
     }
     .header__cta :global(.roll) {
       display: none;
-    }
-  }
-  @media (min-width: 1024px) {
-    .header__nav {
-      display: flex;
-    }
-    .header__cta {
-      display: inline-flex;
-    }
-    .tooth-btn__label {
-      display: block;
-    }
-    .nav-overlay__inner {
-      grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
-      gap: 64px;
-      align-items: start;
-    }
-    .nav-overlay__link {
-      grid-template-columns: 44px auto 1fr auto;
-      gap: 20px;
-      padding: 14px 0;
-      font-size: clamp(2.4rem, 4.6vw, 4rem);
-    }
-    .nav-overlay__tooth {
-      width: 44px;
-      height: 44px;
-    }
-    .nav-overlay__side {
-      padding-top: 36px;
     }
   }
 </style>

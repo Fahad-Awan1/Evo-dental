@@ -68,6 +68,7 @@ const jsonLd = [dentist, ...schema];
     <meta name="theme-color" content="#9a4a2b" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
+    <slot name="head" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
