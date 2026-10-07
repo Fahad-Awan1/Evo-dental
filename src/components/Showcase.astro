@@ -1,0 +1,268 @@
+---
+// Scroll-driven 3D treatment showcase. Without JS/WebGL (or with reduced motion)
+// it renders as a plain grid of cards; scripts/app.ts adds `.is-live` to switch
+// on the sticky, scroll-scrubbed 3D version.
+import Icon from './Icon.astro';
+import CircleBadge from './CircleBadge.astro';
+import { showcaseSteps } from '../data/content';
+---
+
+<section class="showcase" data-showcase aria-labelledby="showcase-title">
+  <div class="showcase__sticky">
+    <header class="showcase__head">
+      <p class="eyebrow">Treatments in 3D</p>
+      <h2 class="showcase__title" id="showcase-title">Scroll to explore how we rebuild smiles</h2>
+    </header>
+
+    <div class="showcase__stage">
+      <div class="showcase__disc" aria-hidden="true"></div>
+      <div class="showcase__ring"><CircleBadge id="showcase-ring" text="Implants · Aligners · Whitening · Braces · Evo Dental · " repeat={2} size={6.2} /></div>
+      <div class="showcase__canvas three-slot" data-three="showcase"></div>
+    </div>
+
+    <ol class="showcase__panels">
+      {
+        showcaseSteps.map((step, i) => (
+          <li class="showcase__panel" data-step={step.model}>
+            <span class="showcase__icon"><Icon name={step.icon} /></span>
+            <span class="showcase__num">0{i + 1}</span>
+            <h3>{step.title}</h3>
+            <p>{step.text}</p>
+            <p class="showcase__meta">{step.meta}</p>
+            <a href={step.href} class="showcase__link">
+              Learn more <span class="sr-only">about {step.title.toLowerCase()}</span> <Icon name="arrow" />
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="showcase__hud" aria-hidden="true">
+      <span><b data-showcase-count>01</b> / 0{showcaseSteps.length}</span>
+      <span class="showcase__bar"><i data-showcase-bar></i></span>
+      <span class="showcase__hint">Scroll</span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .showcase {
+    margin-inline: clamp(8px, 1.2vw, 16px);
+    border-radius: var(--r-lg);
+    background: var(--cream);
+    overflow: clip; /* clip, not hidden: hidden would break position: sticky */
+  }
+  .showcase__sticky {
+    display: grid;
+    gap: clamp(24px, 4vw, 48px);
+    padding: clamp(48px, 7vw, 96px) var(--pad);
+  }
+  .showcase__title {
+    margin-top: 12px;
+    font-size: clamp(1.7rem, 3.6vw, 3rem);
+    font-weight: 500;
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+
+  /* --- Static layout (default) --- */
+  .showcase__stage,
+  .showcase__hud {
+    display: none;
+  }
+  .showcase__panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+    gap: 14px;
+  }
+  .showcase__panel {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 22px;
+    border-radius: var(--r-md);
+    background: var(--white);
+  }
+  .showcase__icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--rust);
+    color: var(--white);
+  }
+  .showcase__icon :global(svg) {
+    width: 26px;
+    height: 26px;
+  }
+  .showcase__num {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--rust);
+  }
+  .showcase__panel h3 {
+    font-size: clamp(1.5rem, 2.6vw, 2.4rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .showcase__panel p {
+    color: #4a4643;
+    max-width: 44ch;
+  }
+  .showcase__panel .showcase__meta {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .showcase__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-self: start;
+    min-height: 44px;
+    font-weight: 600;
+    color: var(--rust);
+  }
+  .showcase__link :global(svg) {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.4s var(--ease);
+  }
+  .showcase__link:hover :global(svg) {
+    transform: translateX(5px);
+  }
+
+  /* --- Live 3D layout --- */
+  .showcase:global(.is-live) {
+    height: 400svh;
+  }
+  .showcase:global(.is-live) .showcase__sticky {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: 10px;
+    padding: calc(var(--header-h) + 6px) var(--pad) 18px;
+  }
+  .showcase:global(.is-live) .showcase__title {
+    font-size: clamp(1.15rem, 2.4vw, 1.9rem);
+    margin-top: 6px;
+  }
+  .showcase:global(.is-live) .showcase__stage {
+    display: block;
+    position: relative;
+    min-height: 0;
+  }
+  .showcase__disc {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: min(82%, 78vw);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 34% 28%, #c27a5a, var(--rust) 55%, var(--rust-deep));
+    box-shadow: 0 40px 80px rgba(127, 59, 33, 0.3);
+    transform: translate(-50%, -50%);
+  }
+  .showcase__ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: min(100%, 96vw);
+    aspect-ratio: 1;
+    color: var(--rust);
+    transform: translate(-50%, -50%);
+  }
+  .showcase__canvas {
+    position: absolute;
+    inset: 0;
+  }
+  .showcase:global(.is-live) .showcase__panels {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .showcase:global(.is-live) .showcase__panel {
+    grid-area: 1 / 1;
+    gap: 6px;
+    padding: 0;
+    background: none;
+  }
+  .showcase:global(.is-live) .showcase__icon {
+    display: none;
+  }
+  .showcase:global(.is-live) .showcase__panel p {
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+  .showcase:global(.is-live) .showcase__hud {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+  }
+  .showcase__hud b {
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+  .showcase__bar {
+    flex: 1;
+    max-width: min(240px, 50%);
+    height: 2px;
+    background: rgba(19, 17, 16, 0.14);
+  }
+  .showcase__bar i {
+    display: block;
+    height: 100%;
+    background: var(--rust);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+  .showcase__hint {
+    display: none;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+  }
+
+  @media (min-width: 900px) {
+    .showcase:global(.is-live) .showcase__sticky {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      column-gap: clamp(24px, 4vw, 72px);
+      padding-bottom: 32px;
+    }
+    .showcase:global(.is-live) .showcase__head {
+      grid-area: 1 / 1;
+      align-self: start;
+      padding-top: 16px;
+    }
+    .showcase:global(.is-live) .showcase__stage {
+      grid-area: 1 / 2 / 4 / 3;
+    }
+    .showcase:global(.is-live) .showcase__panels {
+      grid-area: 2 / 1;
+      align-self: center;
+    }
+    .showcase:global(.is-live) .showcase__panel {
+      gap: 12px;
+    }
+    .showcase:global(.is-live) .showcase__panel p {
+      font-size: 1.05rem;
+    }
+    .showcase:global(.is-live) .showcase__hud {
+      grid-area: 3 / 1;
+    }
+    .showcase__hint {
+      display: inline;
+    }
+  }
+</style>

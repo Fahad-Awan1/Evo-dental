@@ -1,0 +1,129 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import Showcase from '../../components/Showcase.astro';
+import BeforeAfter from '../../components/BeforeAfter.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { faqs } from '../../data/content';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const steps = [
+  { title: 'Consultation', text: 'We listen, examine and take any scans needed. No pressure, no obligation.' },
+  { title: 'Your plan', text: 'Options, timings and costs explained in plain language and given to you in writing.' },
+  { title: 'Gentle treatment', text: 'Care delivered at your pace, with comfort options for nervous patients.' },
+  { title: 'Aftercare', text: 'A follow-up call, home-care advice and reminders so results last.' },
+];
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+
+<Base
+  title="Dental Services"
+  description="Preventive, cosmetic, pediatric and emergency dentistry, dental implants, braces, Invisalign and whitening at Evo Dental."
+  schema={[faqSchema]}
+>
+  <PageHero
+    eyebrow="Our services"
+    title="Complete care,"
+    em="one clinic"
+    lede="From a first check-up to a full smile makeover, every treatment is delivered by a specialist team under one roof."
+    model="implant"
+  />
+
+  <section class="section" aria-labelledby="all-services">
+    <div class="container">
+      <h2 class="h-section list__title" id="all-services" data-split>Treatments we offer</h2>
+      <div class="svc-grid list">
+        {
+          services.map((s, i) => (
+            <ServiceCard
+              title={s.data.title}
+              summary={s.data.summary}
+              href={`/services/${s.id}/`}
+              icon={s.data.icon}
+              index={i}
+              meta={`${s.data.price} · ${s.data.duration}`}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <Showcase />
+
+  <section class="section" aria-labelledby="process-title">
+    <div class="container">
+      <h2 class="h-section list__title" id="process-title" data-split>How a visit works</h2>
+      <ol class="steps">
+        {
+          steps.map((s, i) => (
+            <li data-reveal="fan" data-lift>
+              <span class="steps__num">0{i + 1}</span>
+              <h3 class="h-card">{s.title}</h3>
+              <p>{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <BeforeAfter />
+  <Faq />
+  <CtaBand />
+</Base>
+
+<style>
+  .list__title {
+    margin-bottom: clamp(24px, 4vw, 48px);
+  }
+  .list {
+    display: grid;
+    gap: 14px;
+  }
+  .steps {
+    display: grid;
+    gap: 14px;
+  }
+  .steps li {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: clamp(20px, 2.4vw, 30px);
+    border-radius: var(--r-md);
+    background: var(--card);
+  }
+  .steps li:nth-child(2) {
+    background: var(--cream);
+  }
+  .steps__num {
+    margin-bottom: 28px;
+    font-size: 2.4rem;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--rust);
+  }
+  .steps p {
+    font-size: 0.95rem;
+    color: #4a4643;
+  }
+  @media (min-width: 560px) {
+    .list,
+    .steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1000px) {
+    .list,
+    .steps {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

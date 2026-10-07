@@ -1,0 +1,42 @@
+---
+import Legal from '../layouts/Legal.astro';
+import { site } from '../data/site';
+---
+
+<Legal title="Privacy Policy" description="How Evo Dental collects, uses and protects your personal information." updated="October 2026">
+  <p>
+    This is template wording and should be reviewed by a qualified adviser before the website goes live. It explains,
+    in plain language, how {site.name} handles the information you share with us.
+  </p>
+
+  <h2>Information we collect</h2>
+  <ul>
+    <li>Contact details you provide when requesting an appointment, such as your name, phone number and email address.</li>
+    <li>Details about the treatment you are interested in and any notes you choose to add.</li>
+    <li>Basic, anonymous usage information that helps us keep the website working well.</li>
+  </ul>
+
+  <h2>How we use it</h2>
+  <p>
+    We use your details only to arrange and manage your appointments, respond to your questions and provide dental
+    care. We do not sell your information or share it for marketing by others.
+  </p>
+
+  <h2>The website assistant</h2>
+  <p>
+    The chat assistant on this site runs entirely in your browser. Your conversation is kept only in temporary browser
+    storage for the current visit and is not sent to us or to any third party.
+  </p>
+
+  <h2>Keeping your information safe</h2>
+  <p>
+    Patient records are stored securely and are accessible only to staff who need them to care for you. We keep records
+    for as long as the law requires.
+  </p>
+
+  <h2>Your choices</h2>
+  <p>
+    You can ask to see, correct or delete the personal information we hold about you at any time by emailing{' '}
+    <a href={`mailto:${site.email}`}>{site.email}</a> or calling <a href={site.phoneHref}>{site.phone}</a>.
+  </p>
+</Legal>

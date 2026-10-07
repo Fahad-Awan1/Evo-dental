@@ -1,0 +1,59 @@
+---
+// Evo Dental lockup: tooth mark with an "evolve" spark + italic wordmark.
+interface Props {
+  markOnly?: boolean;
+  class?: string;
+}
+const { markOnly = false, class: cls } = Astro.props;
+---
+
+<span class:list={['logo', cls]}>
+  <svg class="logo__mark" viewBox="0 0 48 48" width="34" height="34" aria-hidden="true" focusable="false">
+    <path
+      fill="currentColor"
+      d="M24 9c-3.2 0-5.2-2-9-2C9.6 7 6 11.2 6 16.8c0 4.6 1.9 7.6 3 11.6 1.2 4.4 1.3 9.3 2.8 12.5.8 1.7 3.2 1.6 3.9-.2 1.4-3.7 1.5-10.7 8.3-10.7s6.900 7 8.300 10.700c.7 1.800 3.100 1.900 3.900.2 1.500-3.200 1.600-8.100 2.800-12.500 1.100-4 3-7 3-11.600C42 11.200 38.400 7 33 7c-3.800 0-5.800 2-9 2z"
+    ></path>
+    <circle class="logo__badge" cx="36.500" cy="35.500" r="9.500"></circle>
+    <path
+      class="logo__spark"
+      d="M36.500 29.500l1.500 4.500 4.500 1.500-4.500 1.500-1.500 4.500-1.500-4.500-4.500-1.500 4.500-1.500z"
+    ></path>
+  </svg>
+  {
+    !markOnly && (
+      <span class="logo__word">
+        EVO<span>DENTAL</span>
+      </span>
+    )
+  }
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: inherit;
+    line-height: 1;
+  }
+  .logo__mark {
+    flex: none;
+  }
+  .logo__badge {
+    fill: var(--logo-bg, #fff);
+  }
+  .logo__spark {
+    fill: var(--logo-accent, var(--rust));
+  }
+  .logo__word {
+    font-size: 1.22rem;
+    font-weight: 700;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+  .logo__word span {
+    font-weight: 400;
+    margin-left: 0.22em;
+  }
+</style>

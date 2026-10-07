@@ -1,0 +1,190 @@
+---
+import { getCollection } from 'astro:content';
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<div class="book">
+  <form
+    class="book__form"
+    data-booking-form
+    data-endpoint={site.formEndpoint}
+    data-whatsapp={site.whatsapp}
+    data-email={site.email}
+  >
+    <div class="field">
+      <label for="bf-name">Full name</label>
+      <input id="bf-name" name="name" type="text" autocomplete="name" required minlength="2" placeholder="Jane Doe" />
+    </div>
+    <div class="field">
+      <label for="bf-phone">Phone</label>
+      <input id="bf-phone" name="phone" type="tel" autocomplete="tel" required pattern="[0-9+\(\)\-\s]{7,}" placeholder="+1 555 000 0000" />
+    </div>
+    <div class="field">
+      <label for="bf-email">Email <span>(optional)</span></label>
+      <input id="bf-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" />
+    </div>
+    <div class="field">
+      <label for="bf-service">Service</label>
+      <select id="bf-service" name="service" required>
+        <option value="">Choose a service</option>
+        {services.map((s) => <option value={s.data.title} data-slug={s.id}>{s.data.title}</option>)}
+        <option value="Not sure yet">Not sure yet</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="bf-date">Preferred date</label>
+      <input id="bf-date" name="date" type="date" required />
+    </div>
+    <div class="field">
+      <label for="bf-time">Preferred time</label>
+      <select id="bf-time" name="time" required>
+        <option value="Morning">Morning (9 AM – 12 PM)</option>
+        <option value="Afternoon">Afternoon (12 – 4 PM)</option>
+        <option value="Evening">Evening (4 – 7 PM)</option>
+      </select>
+    </div>
+    <div class="field field--full">
+      <label for="bf-message">Anything we should know? <span>(optional)</span></label>
+      <textarea id="bf-message" name="message" rows="3" placeholder="Tell us about any pain, concerns or questions"></textarea>
+    </div>
+    <div class="field field--full book__submit">
+      <Button label="Request Appointment" type="submit" />
+      <p>We reply within one working hour to confirm your time.</p>
+    </div>
+  </form>
+
+  <div class="book__success" data-booking-success tabindex="-1" hidden>
+    <span class="book__tick"><Icon name="check" /></span>
+    <h3>Thanks, <span data-booking-name>there</span>! One last step.</h3>
+    <p>
+      Send your request to our front desk with one tap and we will confirm your appointment. Prefer to talk? Call{' '}
+      <a href={site.phoneHref}>{site.phone}</a>.
+    </p>
+    <div class="book__actions">
+      <a class="btn btn--primary" data-booking-wa href={`https://wa.me/${site.whatsapp}`} target="_blank" rel="noopener noreferrer">
+        Send via WhatsApp <span class="btn__icon"><Icon name="whatsapp" /></span>
+      </a>
+      <a class="btn btn--outline" data-booking-mail href={`mailto:${site.email}`}>
+        Send by email <span class="btn__icon"><Icon name="mail" /></span>
+      </a>
+    </div>
+    <button type="button" class="book__again" data-booking-reset>Edit my request</button>
+  </div>
+</div>
+
+<style>
+  .book {
+    padding: clamp(20px, 3vw, 40px);
+    border-radius: var(--r-lg);
+    background: var(--card);
+  }
+  .book__form {
+    display: grid;
+    gap: 16px;
+  }
+  .book__form[hidden] {
+    display: none;
+  }
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+  .field label {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .field label span {
+    font-weight: 400;
+    color: var(--muted);
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 16px;
+    border: 1px solid rgba(19, 17, 16, 0.16);
+    border-radius: var(--r-sm);
+    background: var(--white);
+    font-size: 16px;
+    transition:
+      border-color 0.25s,
+      box-shadow 0.25s;
+  }
+  .field textarea {
+    resize: vertical;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--rust);
+    box-shadow: 0 0 0 3px rgba(154, 74, 43, 0.18);
+  }
+  .book__submit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+    margin-top: 4px;
+  }
+  .book__submit p {
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+  .book__success {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+    outline: none;
+  }
+  .book__success[hidden] {
+    display: none;
+  }
+  .book__tick {
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--rust);
+    color: var(--white);
+  }
+  .book__success h3 {
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    font-weight: 600;
+    line-height: 1.15;
+  }
+  .book__success p {
+    max-width: 52ch;
+    color: #4a4643;
+  }
+  .book__success p a {
+    color: var(--rust);
+    font-weight: 600;
+  }
+  .book__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .book__again {
+    min-height: 44px;
+    font-size: 0.92rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    color: var(--muted);
+  }
+  @media (min-width: 640px) {
+    .book__form {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .field--full {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

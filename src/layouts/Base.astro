@@ -1,0 +1,123 @@
+---
+import '@fontsource-variable/albert-sans/wght.css';
+import '@fontsource-variable/albert-sans/wght-italic.css';
+import '../styles/global.css';
+import fontUrl from '@fontsource-variable/albert-sans/files/albert-sans-latin-wght-normal.woff2?url';
+import { getImage } from 'astro:assets';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Chatbot from '../components/Chatbot.astro';
+import heroSmile from '../assets/images/hero-smile.jpg';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+  schema?: Record<string, unknown>[];
+}
+const { title, description = site.description, noindex = false, schema = [] } = Astro.props;
+
+const pageTitle = title ? `${title} | ${site.name}` : `${site.name} | Modern Dentistry With A Gentle Touch`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const og = await getImage({ src: heroSmile, width: 1200, height: 630, format: 'jpg' });
+const ogUrl = new URL(og.src, Astro.site);
+
+const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const dentist = {
+  '@context': 'https://schema.org',
+  '@type': 'Dentist',
+  name: site.name,
+  description: site.description,
+  url: Astro.site?.href,
+  image: ogUrl.href,
+  telephone: site.phone,
+  email: site.email,
+  priceRange: '$$',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    addressRegion: site.address.region,
+    postalCode: site.address.postal,
+    addressCountry: site.address.country,
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
+  openingHoursSpecification: site.hours
+    .filter((h) => h.open)
+    .map((h) => ({
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: h.days.map((d) => dayNames[d]),
+      opens: h.open,
+      closes: h.close,
+    })),
+  sameAs: site.socials.map((s) => s.href),
+};
+const jsonLd = [dentist, ...schema];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#9a4a2b" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={ogUrl.href} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {jsonLd.map((item) => <script is:inline type="application/ld+json" set:html={JSON.stringify(item)} />)}
+
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var seen = false;
+        try {
+          seen = sessionStorage.getItem('evo-seen');
+        } catch (e) {}
+        d.classList.add(seen ? 'is-entering' : 'is-preloading');
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="curtain" data-curtain aria-hidden="true">
+      <div class="curtain__inner">
+        <svg class="curtain__mark" viewBox="0 0 48 48" width="110" height="110">
+          <path
+            pathLength="1"
+            d="M24 9c-3.2 0-5.2-2-9-2C9.6 7 6 11.2 6 16.8c0 4.6 1.9 7.6 3 11.6 1.2 4.4 1.3 9.3 2.8 12.5.8 1.7 3.2 1.6 3.9-.2 1.4-3.7 1.5-10.7 8.3-10.7s6.900 7 8.300 10.700c.7 1.800 3.100 1.900 3.900.2 1.500-3.200 1.600-8.100 2.800-12.500 1.100-4 3-7 3-11.600C42 11.200 38.400 7 33 7c-3.800 0-5.800 2-9 2z"
+          ></path>
+        </svg>
+        <span class="curtain__word">EVO <span>DENTAL</span></span>
+        <span class="curtain__count"><span data-curtain-count>0</span>%</span>
+      </div>
+    </div>
+    <div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
+
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <Chatbot />
+
+    <script>
+      import '../scripts/app';
+    </script>
+  </body>
+</html>

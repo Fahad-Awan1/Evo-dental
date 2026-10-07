@@ -1,0 +1,154 @@
+---
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+import CircleBadge from './CircleBadge.astro';
+import { site } from '../data/site';
+
+const words = ['Dental Implants', 'Invisalign', 'Teeth Whitening', 'Braces', 'Preventive Care', 'Kids Dentistry', 'Emergency Care', 'Cosmetic Dentistry'];
+---
+
+<section class="cta" aria-labelledby="cta-title">
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      {
+        [0, 1].map(() => (
+          <div class="marquee__group">
+            {words.map((w) => (
+              <span>
+                {w}
+                <Icon name="sparkle" />
+              </span>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="container cta__inner">
+    <div class="cta__text">
+      <h2 class="h-section" id="cta-title" data-split>Ready for a smile you love showing off?</h2>
+      <p class="lede" data-reveal>Book online in under a minute, or call us on <a href={site.phoneHref}>{site.phone}</a>.</p>
+      <div class="cta__actions" data-reveal>
+        <Button label="Book Appointment" href="/contact/" />
+        <button class="cta__chat" type="button" data-chat-open><Icon name="chat" /> Ask a question</button>
+      </div>
+    </div>
+    <a href="/contact/" class="cta__badge" aria-label="Book your visit" data-magnetic>
+      <CircleBadge id="cta-ring" text="Book your visit · Book your visit · Book your visit · " />
+      <span class="cta__badge-core"><Icon name="tooth" /></span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .cta {
+    padding-bottom: clamp(48px, 7vw, 104px);
+    overflow: hidden;
+  }
+  .marquee {
+    padding-block: clamp(14px, 2vw, 22px);
+    margin-bottom: clamp(40px, 6vw, 88px);
+    border-block: 1px solid var(--line);
+  }
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    animation: marquee 38s linear infinite;
+  }
+  .marquee__group {
+    display: flex;
+    flex: none;
+  }
+  .marquee__group span {
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(18px, 3vw, 40px);
+    padding-right: clamp(18px, 3vw, 40px);
+    font-size: clamp(1.4rem, 3.4vw, 2.8rem);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .marquee__group :global(svg) {
+    width: 0.7em;
+    height: 0.7em;
+    color: var(--rust);
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  .cta__inner {
+    display: grid;
+    gap: 32px;
+    align-items: center;
+  }
+  .cta__text {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+  }
+  .cta__text .h-section {
+    max-width: 16ch;
+  }
+  .cta__text .lede a {
+    color: var(--rust);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+  }
+  .cta__chat {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .cta__chat :global(svg) {
+    width: 20px;
+    height: 20px;
+    color: var(--rust);
+  }
+  .cta__badge {
+    position: relative;
+    display: none;
+    width: clamp(150px, 16vw, 210px);
+    aspect-ratio: 1;
+    color: var(--rust);
+  }
+  .cta__badge-core {
+    position: absolute;
+    inset: 24%;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--rust);
+    color: var(--white);
+    transition: transform 0.5s var(--ease);
+  }
+  .cta__badge-core :global(svg) {
+    width: 44%;
+    height: 44%;
+  }
+  .cta__badge:hover .cta__badge-core {
+    transform: scale(1.1);
+  }
+  @media (min-width: 760px) {
+    .cta__inner {
+      grid-template-columns: 1fr auto;
+    }
+    .cta__badge {
+      display: block;
+    }
+  }
+</style>

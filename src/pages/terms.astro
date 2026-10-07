@@ -1,0 +1,42 @@
+---
+import Legal from '../layouts/Legal.astro';
+import { site } from '../data/site';
+---
+
+<Legal title="Terms Of Use" description="The terms that apply when you use the Evo Dental website." updated="October 2026">
+  <p>
+    This is template wording and should be reviewed by a qualified adviser before the website goes live. By using this
+    website you agree to the terms below.
+  </p>
+
+  <h2>General information only</h2>
+  <p>
+    The content on this site, including blog articles and answers from the website assistant, is general information.
+    It is not a diagnosis or a substitute for a consultation with a dentist. If you are in pain or worried about your
+    teeth, please contact us directly.
+  </p>
+
+  <h2>Appointments</h2>
+  <p>
+    Submitting the booking form is a request, not a confirmed appointment. Your visit is confirmed once our team has
+    contacted you. Please give at least 24 hours' notice if you need to cancel or reschedule.
+  </p>
+
+  <h2>Prices</h2>
+  <p>
+    Prices shown are starting guides. Your exact fee depends on your individual needs and is confirmed in a written
+    treatment plan before any work begins.
+  </p>
+
+  <h2>Website content</h2>
+  <p>
+    Text, graphics and the {site.name} name and logo belong to {site.name} and may not be reused without permission.
+    Photographs are used under licence from their respective owners.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    Questions about these terms? Email <a href={`mailto:${site.email}`}>{site.email}</a> or call{' '}
+    <a href={site.phoneHref}>{site.phone}</a>.
+  </p>
+</Legal>

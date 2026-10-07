@@ -1,0 +1,166 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import Button from '../../components/Button.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('blog');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const related = (await getCollection('blog'))
+  .filter((p) => p.id !== entry.id)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+const date = entry.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: entry.data.title,
+  description: entry.data.excerpt,
+  datePublished: entry.data.date.toISOString(),
+  author: { '@type': 'Person', name: entry.data.author },
+  publisher: { '@type': 'Organization', name: 'Evo Dental' },
+};
+---
+
+<Base title={entry.data.title} description={entry.data.excerpt} schema={[schema]}>
+  <article class="article">
+    <header class="container article__head">
+      <a href="/blog/" class="article__back"><Icon name="arrow-left" /> All articles</a>
+      <p class="eyebrow" data-reveal>{entry.data.category}</p>
+      <h1 class="h-section" data-split>{entry.data.title}</h1>
+      <p class="article__meta" data-reveal>By {entry.data.author} · {date} · {entry.data.readTime}</p>
+    </header>
+
+    <div class="container">
+      <div class="media article__cover" data-img-reveal>
+        <Image src={entry.data.cover} alt="" widths={[640, 1000, 1400]} sizes="(min-width: 1100px) 1000px, 92vw" loading="eager" />
+      </div>
+    </div>
+
+    <div class="container article__body">
+      <div class="prose"><Content /></div>
+      <aside class="article__aside">
+        <h2>Have a question about this?</h2>
+        <p>Our team is happy to give advice that is specific to you.</p>
+        <Button label="Book A Visit" href="/contact/" />
+      </aside>
+    </div>
+  </article>
+
+  <section class="section section--tight">
+    <div class="container">
+      <h2 class="h-section related__title" data-split>Keep reading</h2>
+      <div class="related">
+        {
+          related.map((p) => (
+            <ArticleCard title={p.data.title} href={`/blog/${p.id}/`} cover={p.data.cover} category={p.data.category} readTime={p.data.readTime} />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .article {
+    padding-top: calc(var(--header-h) + clamp(24px, 4vw, 56px));
+  }
+  .article__head {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+    max-width: 1000px;
+    margin-bottom: clamp(24px, 4vw, 48px);
+  }
+  .article__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .article__back :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+  .article__back:hover {
+    color: var(--rust);
+  }
+  .article__head .h-section {
+    max-width: 20ch;
+  }
+  .article__meta {
+    font-size: 0.95rem;
+    color: var(--muted);
+  }
+  .article__cover {
+    max-width: 1000px;
+    margin-inline: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--r-lg);
+  }
+  .article__cover :global(img) {
+    object-position: 50% 30%;
+  }
+  .article__body {
+    display: grid;
+    gap: 40px;
+    max-width: 1000px;
+    padding-block: clamp(32px, 5vw, 64px);
+  }
+  .article__aside {
+    display: grid;
+    gap: 12px;
+    justify-items: start;
+    align-self: start;
+    padding: 24px;
+    border-radius: var(--r-md);
+    background: var(--cream);
+  }
+  .article__aside h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .article__aside p {
+    font-size: 0.95rem;
+    color: #4a4643;
+  }
+  .related__title {
+    margin-bottom: clamp(24px, 4vw, 48px);
+  }
+  .related {
+    display: grid;
+    gap: 36px 18px;
+  }
+  @media (min-width: 600px) {
+    .related {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 900px) {
+    .article__body {
+      grid-template-columns: minmax(0, 1fr) 280px;
+    }
+    .article__aside {
+      position: sticky;
+      top: calc(var(--header-h) + 20px);
+    }
+    .related {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

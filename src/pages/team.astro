@@ -1,0 +1,154 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Button from '../components/Button.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { team } from '../data/team';
+---
+
+<Base title="Our Team" description="Meet the dentists and specialists at Evo Dental: experienced, gentle clinicians covering every area of modern dentistry.">
+  <PageHero
+    eyebrow="Our team"
+    title="Experts who"
+    em="really listen"
+    lede="Different specialities, one shared approach: unhurried appointments, clear explanations and genuinely gentle care."
+    model="aligner"
+  />
+
+  <section class="section" aria-labelledby="doctors-title">
+    <div class="container">
+      <h2 class="h-section doctors__title" id="doctors-title" data-split>Our team of experts</h2>
+      <ul class="doctors">
+        {
+          team.map((d) => (
+            <li class="doctor" data-reveal="drop">
+              <div class="media doctor__photo">
+                <Image src={d.photo} alt={`Portrait of ${d.name}`} widths={[320, 480, 720]} sizes="(min-width: 1000px) 30vw, (min-width: 600px) 46vw, 92vw" loading="lazy" />
+                <p class="doctor__bio">{d.bio}</p>
+              </div>
+              <div class="doctor__meta">
+                <div>
+                  <h3 class="h-card">{d.name}</h3>
+                  <p class="doctor__role">{d.role}</p>
+                </div>
+                <span class="doctor__years">{d.years} yrs</span>
+              </div>
+              <p class="doctor__focus">{d.focus}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="join on-rust">
+    <div class="container join__inner">
+      <h2 class="h-section" data-split>Nervous about your visit? Tell us.</h2>
+      <p class="lede" data-reveal>
+        Let us know when you book and we will pair you with a clinician experienced in caring for anxious patients, and
+        allow extra time so nothing feels rushed.
+      </p>
+      <div data-reveal><Button label="Book Appointment" href="/contact/" variant="light" /></div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .doctors__title {
+    margin-bottom: clamp(24px, 4vw, 48px);
+  }
+  .doctors {
+    display: grid;
+    gap: 36px 18px;
+  }
+  .doctor {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+  }
+  .doctor__photo {
+    aspect-ratio: 4 / 4.6;
+    background: #eef0ef;
+  }
+  .doctor__photo :global(img) {
+    object-position: 50% 15%;
+    transition: transform 0.9s var(--ease);
+  }
+  .doctor__bio {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.94);
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+  .doctor__meta {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .doctor__role {
+    color: var(--rust);
+    font-weight: 500;
+  }
+  .doctor__years {
+    flex: none;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+  .doctor__focus {
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .doctor__bio {
+      opacity: 0;
+      transform: translateY(12px);
+      transition:
+        opacity 0.45s var(--ease),
+        transform 0.45s var(--ease);
+    }
+    .doctor:hover .doctor__bio {
+      opacity: 1;
+      transform: none;
+    }
+    .doctor:hover .doctor__photo :global(img) {
+      transform: scale(1.05);
+    }
+  }
+  .join {
+    margin-inline: clamp(8px, 1.2vw, 16px);
+    padding-block: clamp(48px, 7vw, 96px);
+    border-radius: var(--r-lg);
+    background: var(--rust);
+    color: var(--white);
+  }
+  .join__inner {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+  }
+  .join__inner .h-section {
+    max-width: 16ch;
+  }
+  @media (min-width: 600px) {
+    .doctors {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1000px) {
+    .doctors {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

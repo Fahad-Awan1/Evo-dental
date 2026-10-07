@@ -1,0 +1,94 @@
+---
+import Icon from './Icon.astro';
+import CircleBadge from './CircleBadge.astro';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  em?: string;
+  lede?: string;
+  model?: 'tooth' | 'implant' | 'aligner' | 'braces' | 'sparkle';
+}
+const { eyebrow, title, em, lede, model = 'tooth' } = Astro.props;
+const fallbackIcon = { tooth: 'tooth', implant: 'implant', aligner: 'aligner', braces: 'braces', sparkle: 'sparkle' }[model];
+---
+
+<section class="phero">
+  <div class="phero__card on-rust">
+    <div class="phero__text">
+      <p class="eyebrow" data-reveal>{eyebrow}</p>
+      <h1 class="h-display">
+        <span data-split>{title}</span>
+        {em && <em data-split data-delay="0.12">{em}</em>}
+      </h1>
+      {lede && <p class="lede" data-reveal>{lede}</p>}
+      <div class="phero__slot" data-reveal><slot /></div>
+    </div>
+    <div class="phero__visual">
+      <div class="phero__ring"><CircleBadge id="phero-ring" text="Evo Dental · Modern Dentistry · Gentle Touch · " repeat={2} size={7.4} /></div>
+      <div class="phero__model three-slot" data-three="viewer" data-model={model}>
+        <div class="three-slot__fallback"><Icon name={fallbackIcon} /></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .phero {
+    padding: var(--header-h) clamp(8px, 1.2vw, 16px) 0;
+  }
+  .phero__card {
+    position: relative;
+    display: grid;
+    gap: 8px;
+    overflow: hidden;
+    padding: clamp(28px, 5vw, 72px) var(--pad) clamp(20px, 4vw, 56px);
+    border-radius: var(--r-lg);
+    background:
+      radial-gradient(120% 90% at 85% 20%, rgba(255, 255, 255, 0.14), transparent 55%),
+      linear-gradient(160deg, var(--rust) 30%, var(--rust-deep));
+    color: var(--white);
+  }
+  .phero__text {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 18px;
+    align-content: center;
+  }
+  .phero h1 > * {
+    display: block;
+  }
+  .phero .h-display {
+    font-size: clamp(2.3rem, 6.4vw, 5rem);
+  }
+  .phero__slot:empty {
+    display: none;
+  }
+  .phero__visual {
+    position: relative;
+    width: min(100%, 340px);
+    aspect-ratio: 1;
+    margin-inline: auto;
+  }
+  .phero__ring {
+    position: absolute;
+    inset: 4%;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .phero__model {
+    position: absolute;
+    inset: 0;
+    color: var(--white);
+  }
+  @media (min-width: 900px) {
+    .phero__card {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+      align-items: center;
+      min-height: min(62svh, 560px);
+    }
+    .phero__visual {
+      width: min(100%, 440px);
+    }
+  }
+</style>

@@ -1,0 +1,196 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Button from '../../components/Button.astro';
+import Icon from '../../components/Icon.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('services');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const others = (await getCollection('services'))
+  .filter((s) => s.id !== entry.id)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 4);
+
+const models: Record<string, 'tooth' | 'implant' | 'aligner' | 'braces' | 'sparkle'> = {
+  'dental-implants': 'implant',
+  invisalign: 'aligner',
+  braces: 'braces',
+  'teeth-whitening': 'sparkle',
+  'cosmetic-dentistry': 'sparkle',
+};
+const words = entry.data.title.split(' ');
+const lead = words.length > 1 ? words.slice(0, -1).join(' ') : entry.data.title;
+const tail = words.length > 1 ? words[words.length - 1] : undefined;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: entry.data.title,
+  description: entry.data.summary,
+  provider: { '@type': 'Dentist', name: 'Evo Dental' },
+};
+---
+
+<Base title={entry.data.title} description={entry.data.summary} schema={[schema]}>
+  <PageHero eyebrow="Services" title={lead} em={tail} lede={entry.data.summary} model={models[entry.id] ?? 'tooth'}>
+    <Button label="Book This Treatment" href={`/contact/?service=${entry.id}`} variant="light" />
+  </PageHero>
+
+  <section class="section detail">
+    <div class="container detail__grid">
+      <div class="detail__main">
+        <div class="media detail__cover" data-img-reveal>
+          <Image src={entry.data.cover} alt="" widths={[480, 800, 1200]} sizes="(min-width: 900px) 58vw, 92vw" loading="lazy" />
+        </div>
+        <div class="prose"><Content /></div>
+      </div>
+
+      <aside class="detail__side" data-reveal="right">
+        <dl class="detail__facts">
+          <div>
+            <dt>Price</dt>
+            <dd>{entry.data.price}</dd>
+          </div>
+          <div>
+            <dt>Time</dt>
+            <dd>{entry.data.duration}</dd>
+          </div>
+        </dl>
+        <h2>What's included</h2>
+        <ul class="detail__benefits">
+          {
+            entry.data.benefits.map((b) => (
+              <li>
+                <Icon name="check" />
+                {b}
+              </li>
+            ))
+          }
+        </ul>
+        <Button label="Book A Consultation" href={`/contact/?service=${entry.id}`} />
+        <p class="detail__note">Prices are a guide. You receive a written quote after your consultation.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container">
+      <h2 class="h-section more__title" data-split>More treatments</h2>
+      <div class="svc-grid more">
+        {others.map((s) => <ServiceCard title={s.data.title} summary={s.data.summary} href={`/services/${s.id}/`} icon={s.data.icon} meta={s.data.price} />)}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .detail__grid {
+    display: grid;
+    gap: clamp(28px, 5vw, 64px);
+    align-items: start;
+  }
+  .detail__main {
+    display: grid;
+    gap: clamp(24px, 3vw, 40px);
+    min-width: 0;
+  }
+  .detail__cover {
+    aspect-ratio: 16 / 10;
+    border-radius: var(--r-lg);
+  }
+  .detail__cover :global(img) {
+    object-position: 50% 30%;
+  }
+  .detail__side {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+    padding: clamp(20px, 2.6vw, 32px);
+    border-radius: var(--r-lg);
+    background: var(--cream);
+  }
+  .detail__facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+    margin: 0;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(154, 74, 43, 0.25);
+  }
+  .detail__facts dt {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--rust);
+  }
+  .detail__facts dd {
+    margin-top: 4px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .detail__side h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .detail__benefits {
+    display: grid;
+    gap: 10px;
+  }
+  .detail__benefits li {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 10px;
+    font-size: 0.96rem;
+    line-height: 1.4;
+  }
+  .detail__benefits :global(svg) {
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    color: var(--rust);
+  }
+  .detail__note {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .more__title {
+    margin-bottom: clamp(24px, 4vw, 48px);
+  }
+  .more {
+    display: grid;
+    gap: 14px;
+  }
+  @media (min-width: 560px) {
+    .more {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 900px) {
+    .detail__grid {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    }
+    .detail__side {
+      position: sticky;
+      top: calc(var(--header-h) + 20px);
+    }
+  }
+  @media (min-width: 1000px) {
+    .more {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

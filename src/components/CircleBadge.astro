@@ -1,0 +1,41 @@
+---
+// Rotating circular text badge. `text` is stretched to fill the circle, so pass
+// a longer string (or `repeat`) with a smaller `size` for finer lettering.
+interface Props {
+  id: string;
+  text: string;
+  repeat?: number;
+  size?: number;
+  class?: string;
+}
+const { id, text, repeat = 1, size = 13.5, class: cls } = Astro.props;
+---
+
+<svg class:list={['ring', cls]} viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+  <defs>
+    <path id={id} d="M100,100 m-84,0 a84,84 0 1,1 168,0 a84,84 0 1,1 -168,0"></path>
+  </defs>
+  <text style={`font-size:${size}px`}
+    ><textPath href={`#${id}`} textLength="522" lengthAdjust="spacing">{text.repeat(repeat)}</textPath></text
+  >
+</svg>
+
+<style>
+  .ring {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    animation: ring-spin 30s linear infinite;
+  }
+  .ring text {
+    fill: currentColor;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  @keyframes ring-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

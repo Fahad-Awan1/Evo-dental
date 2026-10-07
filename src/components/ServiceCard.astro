@@ -1,0 +1,172 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  title: string;
+  summary: string;
+  href: string;
+  icon?: string;
+  index?: number;
+  meta?: string;
+  featured?: boolean;
+  reveal?: string;
+}
+const { title, summary, href, icon = 'tooth', index, meta, featured = false, reveal = 'drop' } = Astro.props;
+const number = index !== undefined ? String(index + 1).padStart(2, '0') : undefined;
+---
+
+<a href={href} class:list={['svc', { 'is-featured': featured }]} data-reveal={reveal}>
+  <span class="svc__top">
+    <span class="svc__icon"><Icon name={icon} /></span>
+    <span class="svc__arrow"><Icon name="arrow-ur" /></span>
+  </span>
+  <span class="svc__body">
+    {number && <span class="svc__num" aria-hidden="true">{number}</span>}
+    <span class="svc__title h-card">{title}</span>
+    <span class="svc__text">{summary}</span>
+    {meta && <span class="svc__meta">{meta}</span>}
+  </span>
+</a>
+
+<style>
+  .svc {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 36px;
+    min-height: 250px;
+    height: 100%;
+    padding: 18px;
+    overflow: hidden;
+    border-radius: var(--r-md);
+    background: var(--card);
+    transition:
+      background-color 0.45s var(--ease),
+      color 0.45s var(--ease),
+      transform 0.5s var(--ease),
+      box-shadow 0.5s var(--ease);
+  }
+  /* terracotta fill that sweeps out from the arrow button on hover */
+  .svc::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(160deg, var(--rust-soft), var(--rust) 50%, var(--rust-deep));
+    clip-path: circle(0% at calc(100% - 40px) 40px);
+    transition: clip-path 0.75s var(--ease);
+  }
+  .svc__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .svc__icon,
+  .svc__arrow {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    flex: none;
+    border-radius: 50%;
+    transition:
+      background-color 0.45s var(--ease),
+      color 0.45s var(--ease),
+      border-color 0.45s var(--ease),
+      rotate 0.5s var(--ease),
+      scale 0.5s var(--ease);
+  }
+  .svc__icon {
+    background: var(--white);
+    color: var(--rust);
+    box-shadow: 0 6px 18px rgba(19, 17, 16, 0.06);
+  }
+  .svc__icon :global(svg) {
+    width: 22px;
+    height: 22px;
+  }
+  .svc__arrow {
+    border: 1px solid rgba(154, 74, 43, 0.25);
+    background: var(--white);
+    color: var(--rust);
+  }
+  .svc__arrow :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+  .svc__body {
+    display: grid;
+    gap: 8px;
+  }
+  .svc__num {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--rust);
+    transition: color 0.45s var(--ease);
+  }
+  .svc__title {
+    max-width: 11ch;
+  }
+  .svc__text {
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--muted);
+    transition: color 0.45s var(--ease);
+  }
+  .svc__meta {
+    margin-top: 6px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: border-color 0.45s var(--ease);
+  }
+
+  /* The featured card holds the cream highlight while nothing is hovered. */
+  :global(.svc-grid:not(:hover):not(:focus-within)) .svc.is-featured {
+    background: var(--cream);
+  }
+  :global(.svc-grid:not(:hover):not(:focus-within)) .svc.is-featured .svc__arrow {
+    background: var(--rust);
+    border-color: var(--rust);
+    color: var(--white);
+  }
+
+  .svc:hover,
+  .svc:focus-visible {
+    color: var(--white);
+    transform: translateY(-6px);
+    box-shadow: 0 26px 50px rgba(127, 59, 33, 0.26);
+  }
+  .svc:hover::before,
+  .svc:focus-visible::before {
+    clip-path: circle(150% at calc(100% - 40px) 40px);
+  }
+  .svc:hover .svc__arrow,
+  .svc:focus-visible .svc__arrow {
+    rotate: 45deg;
+    border-color: var(--white);
+  }
+  .svc:hover .svc__icon,
+  .svc:focus-visible .svc__icon {
+    scale: 1.08;
+  }
+  .svc:hover .svc__num,
+  .svc:focus-visible .svc__num {
+    color: var(--cream);
+  }
+  .svc:hover .svc__text,
+  .svc:focus-visible .svc__text {
+    color: rgba(255, 255, 255, 0.86);
+  }
+  .svc:hover .svc__meta,
+  .svc:focus-visible .svc__meta {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .svc:focus-visible {
+    outline-color: var(--ink);
+  }
+</style>

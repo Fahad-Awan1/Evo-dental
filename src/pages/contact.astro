@@ -1,0 +1,206 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import BookingForm from '../components/BookingForm.astro';
+import Icon from '../components/Icon.astro';
+import Faq from '../components/Faq.astro';
+import { site, fullAddress, mapsUrl, hoursText } from '../data/site';
+import { faqs } from '../data/content';
+
+const mapEmbed = `https://www.google.com/maps?q=${encodeURIComponent(fullAddress)}&output=embed`;
+---
+
+<Base title="Book An Appointment" description="Book a visit at Evo Dental online, by phone or on WhatsApp. Same-day emergency appointments available.">
+  <PageHero
+    eyebrow="Contact"
+    title="Let's get you"
+    em="smiling"
+    lede="Request an appointment below and we will confirm your time within one working hour."
+    model="tooth"
+  />
+
+  <section class="section">
+    <div class="container contact">
+      <div class="contact__form">
+        <h2 class="h-section" data-split>Book your visit</h2>
+        <BookingForm />
+      </div>
+
+      <aside class="contact__info">
+        <ul class="contact__cards">
+          <li data-reveal="right" data-lift>
+            <span class="contact__icon"><Icon name="phone" /></span>
+            <div>
+              <h3>Call us</h3>
+              <a href={site.phoneHref}>{site.phone}</a>
+            </div>
+          </li>
+          <li data-reveal="right" data-lift>
+            <span class="contact__icon"><Icon name="whatsapp" /></span>
+            <div>
+              <h3>WhatsApp</h3>
+              <a href={`https://wa.me/${site.whatsapp}`} target="_blank" rel="noopener noreferrer">Message our front desk</a>
+            </div>
+          </li>
+          <li data-reveal="right" data-lift>
+            <span class="contact__icon"><Icon name="mail" /></span>
+            <div>
+              <h3>Email</h3>
+              <a href={`mailto:${site.email}`}>{site.email}</a>
+            </div>
+          </li>
+          <li data-reveal="right" data-lift>
+            <span class="contact__icon"><Icon name="pin" /></span>
+            <div>
+              <h3>Visit</h3>
+              <a href={mapsUrl} target="_blank" rel="noopener noreferrer">{fullAddress}</a>
+            </div>
+          </li>
+        </ul>
+
+        <div class="hours" data-reveal="zoom">
+          <h3><Icon name="clock" /> Opening hours</h3>
+          <dl>
+            {
+              site.hours.map((h) => (
+                <div data-days={h.days.join(',')}>
+                  <dt>{h.label}</dt>
+                  <dd>{hoursText(h)}</dd>
+                </div>
+              ))
+            }
+          </dl>
+          <p>Dental emergency? Call first thing and we will see you the same day.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="map-wrap">
+    <div class="map media" data-reveal="zoom">
+      <iframe src={mapEmbed} title={`Map showing ${site.name} at ${fullAddress}`} loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </section>
+
+  <Faq items={faqs.slice(0, 4)} title="Before you book" />
+</Base>
+
+<style>
+  .contact {
+    display: grid;
+    gap: clamp(32px, 5vw, 64px);
+    align-items: start;
+  }
+  .contact__form {
+    display: grid;
+    gap: clamp(20px, 3vw, 36px);
+    min-width: 0;
+  }
+  .contact__info {
+    display: grid;
+    gap: 14px;
+  }
+  .contact__cards {
+    display: grid;
+    gap: 10px;
+  }
+  .contact__cards li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--r-md);
+    background: var(--card);
+  }
+  .contact__icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--rust);
+    color: var(--white);
+  }
+  .contact__icon :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+  .contact__cards h3 {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .contact__cards a {
+    font-size: 1.02rem;
+    font-weight: 500;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+  .contact__cards a:hover {
+    color: var(--rust);
+  }
+  .hours {
+    padding: clamp(20px, 2.4vw, 28px);
+    border-radius: var(--r-md);
+    background: var(--cream);
+  }
+  .hours h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .hours h3 :global(svg) {
+    width: 20px;
+    height: 20px;
+    color: var(--rust);
+  }
+  .hours dl {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+  }
+  .hours dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(154, 74, 43, 0.18);
+  }
+  .hours :global(.is-today) {
+    font-weight: 600;
+    color: var(--rust-deep);
+  }
+  .hours p {
+    margin-top: 14px;
+    font-size: 0.9rem;
+    color: #4a4643;
+  }
+  .map-wrap {
+    padding-inline: clamp(8px, 1.2vw, 16px);
+  }
+  .map {
+    height: clamp(300px, 42vw, 480px);
+    border-radius: var(--r-lg);
+  }
+  .map iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    filter: grayscale(0.35) sepia(0.12);
+  }
+  @media (min-width: 960px) {
+    .contact {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    }
+    .contact__info {
+      position: sticky;
+      top: calc(var(--header-h) + 20px);
+    }
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '../components/Button.astro';
+import Icon from '../components/Icon.astro';
+---
+
+<Base title="Page Not Found" noindex>
+  <section class="nf">
+    <div class="nf__card on-rust">
+      <div class="nf__model three-slot" data-three="viewer" data-model="tooth">
+        <div class="three-slot__fallback"><Icon name="tooth" /></div>
+      </div>
+      <p class="eyebrow">Error 404</p>
+      <h1 class="h-display">This page has been <em>extracted</em></h1>
+      <p class="lede">The page you are looking for has moved or no longer exists. Let's get you back to a healthy link.</p>
+      <div class="nf__actions">
+        <Button label="Back To Home" href="/" variant="light" />
+        <Button label="Book Appointment" href="/contact/" variant="outline" />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    padding: var(--header-h) clamp(8px, 1.2vw, 16px) clamp(8px, 1.2vw, 16px);
+  }
+  .nf__card {
+    display: grid;
+    gap: 18px;
+    justify-items: center;
+    align-content: center;
+    min-height: min(78svh, 760px);
+    padding: clamp(32px, 6vw, 80px) var(--pad);
+    border-radius: var(--r-lg);
+    background: linear-gradient(160deg, var(--rust) 30%, var(--rust-deep));
+    color: var(--white);
+    text-align: center;
+  }
+  .nf__model {
+    width: min(60vw, 260px);
+    aspect-ratio: 1;
+  }
+  .nf .h-display {
+    font-size: clamp(2.2rem, 6.4vw, 4.8rem);
+    max-width: 14ch;
+  }
+  .nf__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+</style>

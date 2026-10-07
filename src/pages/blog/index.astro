@@ -1,0 +1,123 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+const posts = (await getCollection('blog')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const [lead, ...rest] = posts;
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<Base title="Dental News & Insights" description="Practical, dentist-written advice on prevention, whitening, orthodontics and children's dental health from Evo Dental.">
+  <PageHero
+    eyebrow="Blog"
+    title="Dental news"
+    em="& insights"
+    lede="Straightforward advice from our clinicians to help you look after your smile between visits."
+    model="sparkle"
+  />
+
+  <section class="section">
+    <div class="container">
+      <a href={`/blog/${lead.id}/`} class="lead" data-reveal>
+        <div class="media lead__media">
+          <Image src={lead.data.cover} alt="" widths={[480, 800, 1200]} sizes="(min-width: 900px) 56vw, 92vw" loading="eager" />
+        </div>
+        <div class="lead__body">
+          <p class="lead__meta">{lead.data.category} · {fmt(lead.data.date)} · {lead.data.readTime}</p>
+          <h2 class="h-section">{lead.data.title}</h2>
+          <p class="lede">{lead.data.excerpt}</p>
+          <span class="lead__more">Read article <span><Icon name="arrow-ur" /></span></span>
+        </div>
+      </a>
+
+      <div class="grid">
+        {
+          rest.map((p) => (
+            <ArticleCard title={p.data.title} href={`/blog/${p.id}/`} cover={p.data.cover} category={p.data.category} readTime={p.data.readTime} />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .lead {
+    display: grid;
+    gap: clamp(20px, 4vw, 56px);
+    align-items: center;
+    margin-bottom: clamp(40px, 6vw, 88px);
+  }
+  .lead__media {
+    aspect-ratio: 16 / 11;
+    border-radius: var(--r-lg);
+  }
+  .lead__media :global(img) {
+    transition: transform 0.9s var(--ease);
+  }
+  .lead:hover .lead__media :global(img) {
+    transform: scale(1.05);
+  }
+  .lead__body {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+  }
+  .lead__body .h-section {
+    font-size: clamp(1.7rem, 3.4vw, 3rem);
+  }
+  .lead__meta {
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--rust);
+  }
+  .lead__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+  }
+  .lead__more span {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--rust);
+    color: var(--white);
+    transition: transform 0.45s var(--ease);
+  }
+  .lead__more :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
+  .lead:hover .lead__more span {
+    transform: rotate(45deg);
+  }
+  .grid {
+    display: grid;
+    gap: 36px 18px;
+  }
+  @media (min-width: 600px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 900px) {
+    .lead {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    }
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

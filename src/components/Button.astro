@@ -1,0 +1,20 @@
+---
+import Roll from './Roll.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  label: string;
+  href?: string;
+  variant?: 'primary' | 'light' | 'outline';
+  icon?: string;
+  class?: string;
+  [key: string]: unknown;
+}
+const { label, href, variant = 'primary', icon = 'arrow', class: cls, ...rest } = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag href={href} class:list={['btn', `btn--${variant}`, cls]} data-magnetic {...rest}>
+  <Roll text={label} />
+  <span class="btn__icon"><Icon name={icon} /></span>
+</Tag>

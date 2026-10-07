@@ -1,0 +1,13 @@
+---
+// Rolling-character hover label. Hovering the parent link/button rolls each
+// character up, staggered (styles live in global.css).
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+const chars = [...text];
+---
+
+<span class="roll" aria-hidden="true"
+  >{chars.map((c, i) => <span class="roll__c" style={`--i:${i}`} data-c={c}>{c}</span>)}</span
+><span class="sr-only">{text}</span>
